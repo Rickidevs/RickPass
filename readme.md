@@ -1,4 +1,4 @@
-# 🔒 Rickpass.xyz
+# 🔒 rickpass.xyz
 
 Bu layihə, istifadəçilərin şifrələrinin təhlükəsizliyini yoxlamağa yönəlmiş bir veb tətbiqidir. Tətbiq, istifadəçidən alınan məlumatları istifadə edərək, şifrə sızıntısı olub-olmamasını müəyyən etmək üçün müxtəlif alqoritmlər və verilənlər bazaları ilə işləyir.
 
