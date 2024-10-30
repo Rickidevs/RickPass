@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Rick's Passwords</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link type="image/png" sizes="96x96" rel="icon" href="https://img.icons8.com/plasticine/100/rick-sanchez.png">
+
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #0f0f0f;
+            color: #00ff00;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.8);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 40px 20px 60px;
+            }
+
+            .footer {
+                margin-top: 20px; 
+                padding: 10px 20px;
+            }
+        }
+
+        .container:hover {
+            transform: scale(1.05);
+        }
+
+        h1 {
+            text-align: center;
+            color: #00ff00;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+
+        .letter {
+            display: inline-block;
+            opacity: 0;
+            animation: sparkle 3s infinite;
+        }
+
+        @keyframes sparkle {
+            0% { opacity: 0.3; }
+            20% { opacity: 1; }
+            80% { opacity: 0.3; }
+            100% { opacity: 0.3; }
+        }
+
+        p {
+            font-size: 16px;
+            color: #00ff00;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+        }
+
+        .input-group {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #555;
+            background-color: #222;
+            color: #00ff00;
+            border-radius: 4px;
+            margin-right: 10px;
+            transition: border 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border: 1px solid #00ff00;
+            outline: none;
+        }
+
+        button {
+            padding: 10px 20px;.
+            font-size: 18px;
+            font-weight: bold; 
+            background-color: #00cc00;
+            color: #1e1e1e;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            transition: background-color 0.3s, transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: -1;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        button:hover {
+            background-color: #009900;
+            transform: scale(1.05);
+        }
+
+        button:hover::before {
+            transform: scaleX(1);
+        }
+
+        button:active {
+            background-color: #007700;
+            transform: scale(0.95);
+        }
+
+
+        .result {
+            margin-top: 20px;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            font-size: 24px;
+            transition: transform 0.5s, color 0.3s;
+        }
+
+        .result.exists {
+            color: red;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+            animation: shake 0.5s;
+        }
+        .result.not-exists {
+            color: green;
+            animation: bounce 0.5s;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(0); }
+            25% { transform: translate(-5px); }
+            50% { transform: translate(5px); }
+            75% { transform: translate(-5px); }
+            100% { transform: translate(0); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .loader {
+            border: 8px solid #333;
+            border-top: 8px solid #00ff00;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://source.unsplash.com/1920x1080/?hacker') no-repeat center center fixed;
+            background-size: cover;
+            filter: blur(5px);
+            z-index: -1;
+        }
+
+        .social-icons {
+    position: fixed;
+    bottom: 50px;
+    left: 50%;
+    display: flex;
+    gap: 10px;
+    transform: translateX(-50%);
+}
+
+.social-icons a i, .social-icons a img {
+    font-size: 36px;
+    color: #00ff00;
+    transition: color 0.3s, box-shadow 0.3s;
+    background: none;
+    box-shadow: none;
+    border: none;
+}
+
+.social-icons a {
+    text-decoration: none;
+    transition: box-shadow 0.3s;
+}
+
+.social-icons a:hover i, .social-icons a:hover img {
+    color: #00cc00;
+}
+
+.kritik-durum a {
+    box-shadow: none;
+}
+
+.kritik-durum a i, .kritik-durum a img {
+    color: #ff0000;
+    background: none;
+    border: none;
+}
+
+.kritik-durum a:hover i, .kritik-durum a:hover img {
+    color: #cc0000;
+}
+
+.footer {
+            text-align: center;
+            font-size: 14px;
+            color: #ccc; 
+            margin-top: 20px;
+        }
+
+.footer p {
+            margin: 0; 
+        }
+
+
+    </style>
+
+</head>
+<body>
+    <div class="bg"></div>
+
+    <div class="container" id="container">
+        <h1 id="animatedTitle"></h1>
+
+        <div class="input-group"> <input type="text" id="passwordInput" placeholder="Şifrənizi bura yazın..." autocomplete="off" oninput="checkInput()"> 
+            <button id="checkButton" onclick="checkPassword()" disabled>Yoxla</button> 
+        </div>
+
+        <div id="loader" class="loader"></div>
+        <p id="result" class="result"></p>
+
+    </div>
+
+    <div class="footer">
+        <p>Girdiyiniz şifrə yalnızca anlıq təsdiqləmə üçün istifadə olunur və heç bir qeydi tutulmur</p>
+    </div>
+
+    <div class="social-icons kritik-durum">
+
+        <a href="https://www.linkedin.com/in/elvinlatifli" target="_blank" title="LinkedIn">
+            <i class="fab fa-linkedin"></i>
+        </a>
+        <a href="https://github.com/rickidevs" target="_blank" title="GitHub">
+            <i class="fab fa-github"></i>
+        </a>
+        <a href="https://www.instagram.com/elvinltfl" target="_blank" title="Instagram"> 
+            <i class="fab fa-instagram"></i>
+        </a>
+    </div>
+    
+    
+    <script>
+        const titleText = "Rick's Passwords";
+        const animatedTitle = document.getElementById("animatedTitle");
+
+        titleText.split('').forEach((char, index) => {
+            const span = document.createElement('span');
+            span.textContent = char === ' ' ? '\u00A0' : char;
+            span.className = 'letter';
+            span.style.animationDelay = `${index * 0.1}s`;
+            animatedTitle.appendChild(span);
+        });
+
+        function kritikDurum() {
+        const sosyalIconlar = document.querySelectorAll('.social-icons a');
+        sosyalIconlar.forEach(icon => {
+            icon.classList.add('kritik-durum');
+        });
+    }
+    
+   function checkPassword() {
+    const password = document.getElementById("passwordInput").value.trim();
+    const result = document.getElementById("result");
+    const loader = document.getElementById("loader");
+    const container = document.getElementById("container");
+    const checkButton = document.getElementById("checkButton");
+
+    if (password === "") {
+        result.textContent = "bir şifrə yazın";
+        result.style.color = "red";
+        result.className = "result";
+        container.style.boxShadow = "0 0 30px rgba(255, 0, 0, 0.8)";
+        changeColors("red");
+        return;
+    }
+
+    loader.style.display = "block";
+    result.textContent = "";
+    document.getElementById("passwordInput").value = "";
+
+    setTimeout(() => {
+        fetch("index.php/check_password", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ password: password })
+        })
+        .then(response => {
+            loader.style.display = "none";
+            if (!response.ok) {
+                throw new Error("Xəta: " + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.result === "exists") {
+                result.textContent = "Şifrən ələ keçirilib!!..";
+                result.className = "result exists";
+                checkButton.style.backgroundColor = "red";
+                container.style.boxShadow = "0 0 30px rgba(255, 0, 0, 0.8)";
+                changeColors("red");
+            } else {
+                result.textContent = "Şifrən təmizdir..";
+                result.className = "result not-exists";
+                checkButton.style.backgroundColor = "#00cc00";
+                container.style.boxShadow = "0 0 30px rgba(0, 255, 0, 0.8)";
+                changeColors("#00ff00");
+            }
+        })
+        .catch(error => {
+            loader.style.display = "none";
+            result.textContent = "Xəta: " + error.message;
+            result.style.color = "red";
+            result.className = "result";
+        });
+    }, 1500);
+}
+
+
+document.getElementById("passwordInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                checkPassword();
+            }
+        });
+        
+
+
+function checkInput() {
+    const passwordInput = document.getElementById("passwordInput");
+    const checkButton = document.getElementById("checkButton");
+    if (passwordInput.value.trim() === "") {
+        checkButton.disabled = true;
+    } else {
+        checkButton.disabled = false;
+    }
+}
+
+        
+function changeColors(color) {
+    document.body.style.color = color;
+    const elements = document.querySelectorAll('.container, .letter, p, input[type="text"]');
+    elements.forEach(element => {
+        element.style.color = color;
+        element.style.borderColor = color;
+    });
+}
+
+    </script>
+</body>
+</html>
