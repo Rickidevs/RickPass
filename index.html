@@ -194,7 +194,6 @@
         if (/^[A-Za-z0-9]+$/.test(password)) score -= 30;
         if (/^[A-Za-z]+$/.test(password)) score -= 25;
         if (/^[A-Z]+$/.test(password)) score -= 15;
-        if (/^\d+$/.test(password)) score -= 25;
         if (/^[A-Z]/.test(password)) score -= 20;
         if (!/[\W_]/.test(password)) score -= 25;
         if (!/[A-Z]/.test(password)) score -= 10;
