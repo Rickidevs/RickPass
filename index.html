@@ -157,7 +157,6 @@
 
         <div class="input-group"> 
             <input type="text" id="passwordInput" placeholder="Enter your password.." autocomplete="off"> 
-            <button id="check-btn">Check</button> 
         </div>
 
         <div id="loader" class="loader"></div>
@@ -185,58 +184,65 @@
             animatedTitle.appendChild(span);
         });
 
-        document.getElementById("check-btn").addEventListener("click", function() {
-    const password = document.getElementById("passwordInput").value; 
-    const resultDiv = document.getElementById("result");
+        document.getElementById("passwordInput").addEventListener("input", function () {
+        const password = this.value;
+        const resultDiv = document.getElementById("result");
 
-    if (!password) {
-        resultDiv.textContent = "Please enter a password.";
-        resultDiv.style.color = "red";
-        return;
-    }
-
-    let score = 100;
-
-    if (password.length <= 9) score -= 10;
-
-    if (/\d{4}/.test(password)) {
-        const year = parseInt(password.match(/\d{4}/)[0], 10);
-        if (year >= 1900 && year <= 2050) {
-            score -= 40;
+        if (password === "") {
+        resultDiv.innerHTML = "";
+        return; 
         }
-    }
 
-    if (/^[A-Za-z0-9]+$/.test(password)) score -= 30;
+        let score = 100;
 
-    if (/^[A-Z]/.test(password)) score -= 20;
+        if (password.length <= 9) score -= 10;
+        if (/\d{4}/.test(password)) {
+            const year = parseInt(password.match(/\d{4}/)[0], 10);
+            if (year >= 1900 && year <= 2050) score -= 40;
+        }
+        if (/^[A-Za-z0-9]+$/.test(password)) score -= 30;
+        if (/^[A-Za-z]+$/.test(password)) score -= 25;
+        if (/^[A-Z]+$/.test(password)) score -= 15;
+        if (/^\d+$/.test(password)) score -= 25;
+        if (/^[A-Z]/.test(password)) score -= 20;
+        if (!/[\W_]/.test(password)) score -= 25;
+        if (!/[A-Z]/.test(password)) score -= 10;
+        if (/^\s+$/.test(password)) {
+            score -= 69;
+        } else if (/\s/.test(password)) {
+            score += 25;
+        }
+        if (/(.)\1{2,}/.test(password)) score -= 5;
+        if ((password.match(/[\W_]/g) || []).length < 2) score -= 7;
+        if ((password.match(/[A-Z]/g) || []).length < 2) score -= 4;
+        if (/[A-Z]{2}/.test(password)) score -= 4;
+        if (/([A-Z])\1/.test(password)) score -= 7;
 
-    if (!/[\W_]/.test(password)) score -= 25;
+        if (score < 0) score = 0;
+        if (score > 100 ) score = 100;
 
-    if (!/[A-Z]/.test(password)) score -= 10;
+        let strength = "Weak";
+        if (score >= 70) strength = "Strong";
+        else if (score >= 40) strength = "Medium";
 
-    if (/\s/.test(password)) score += 25;
+        let crackTime = "";
+        if (score < 5) crackTime = "3 days";
+        else if (score < 15) crackTime = "5 days";
+        else if (score < 30) crackTime = "1 month";
+        else if (score < 45) crackTime = "6 months";
+        else if (score < 55) crackTime = "5 years";
+        else if (score < 66) crackTime = "20 years";
+        else if (score < 70) crackTime = "60 years";
+        else if (score < 80) crackTime = "200 years";
+        else if (score < 90) crackTime = "500 years";
+        else if (score >= 90) crackTime = "1000 years";
 
-    if (/(.)\1{2,}/.test(password)) score -= 5;
-
-    if ((password.match(/[\W_]/g) || []).length < 2) score -= 7;
-
-    if ((password.match(/[A-Z]/g) || []).length < 2) score -= 4;
-
-    if (/(?![A-Z]*[A-Z]{2})[A-Z]{2,}/.test(password)) score -= 4;
-
-    if (/(?![A-Z]*([A-Z])\1{1,})[A-Z]{2,}/.test(password)) score -= 7;
-
-    if (score < 0) score = 0;
-
-    let strength = "Weak";
-    if (score >= 70) strength = "Strong";
-    else if (score >= 40) strength = "Medium";
-
-    resultDiv.textContent = `Strength: ${strength} (Score: ${score}/100)`;
-    resultDiv.style.color = score >= 70 ? "#00ff00" : score >= 40 ? "#ffcc00" : "#ff0000";
-});
-
-
-    </script>
+        resultDiv.innerHTML = `
+            <strong>${strength}</strong> (Score: ${score}/100)<br>
+            crack time: <strong>${crackTime}</strong>
+        `;
+        resultDiv.style.color = score >= 70 ? "#00ff00" : score >= 40 ? "#ffcc00" : "#ff0000";
+    });
+</script>
 </body>
 </html>
