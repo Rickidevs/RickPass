@@ -17,6 +17,7 @@
             padding: 0;
             overflow: hidden;
         }
+
         .container {
             max-width: 600px;
             margin: 50px auto;
@@ -26,41 +27,18 @@
             box-shadow: 0 0 30px rgba(0, 255, 0, 0.8);
             position: relative;
             overflow: hidden;
-            transition: transform 0.3s;
         }
 
         @media (max-width: 600px) {
             .container {
-                margin: 40px 20px 60px;
+                margin: 40px 20px;
             }
-
-            .footer {
-                margin-top: 20px; 
-                padding: 10px 20px;
-            }
-        }
-
-        .container:hover {
-            transform: scale(1.05);
         }
 
         h1 {
             text-align: center;
             color: #00ff00;
             text-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
-        }
-
-        .letter {
-            display: inline-block;
-            opacity: 0;
-            animation: sparkle 3s infinite;
-        }
-
-        @keyframes sparkle {
-            0% { opacity: 0.3; }
-            20% { opacity: 1; }
-            80% { opacity: 0.3; }
-            100% { opacity: 0.3; }
         }
 
         p {
@@ -95,34 +73,16 @@
         button {
             padding: 10px 20px;
             font-size: 18px;
-            font-weight: bold; 
+            font-weight: bold;
             background-color: #00cc00;
             color: #1e1e1e;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            z-index: 1;
             transition: background-color 0.3s, transform 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            text-align: center;
-        }
-
-        button::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            z-index: -1;
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.5s ease-in-out;
         }
 
         button:hover {
@@ -130,46 +90,12 @@
             transform: scale(1.05);
         }
 
-        button:hover::before {
-            transform: scaleX(1);
-        }
-
-        button:active {
-            background-color: #007700;
-            transform: scale(0.95);
-        }
-
-
         .result {
             margin-top: 20px;
             font-weight: bold;
             text-align: center;
             text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
             font-size: 24px;
-            transition: transform 0.5s, color 0.3s;
-        }
-
-        .result.exists {
-            color: red;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
-            animation: shake 0.5s;
-        }
-        .result.not-exists {
-            color: green;
-            animation: bounce 0.5s;
-        }
-
-        @keyframes shake {
-            0% { transform: translate(0); }
-            25% { transform: translate(-5px); }
-            50% { transform: translate(5px); }
-            75% { transform: translate(-5px); }
-            100% { transform: translate(0); }
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
         }
 
         .loader {
@@ -188,133 +114,36 @@
             100% { transform: rotate(360deg); }
         }
 
-        .bg {
+        .footer {
+            text-align: center;
+            font-size: 14px;
+            color: #ccc;
+            padding: 10px 0;
+            background-color: #1a1a1a;
+            border-top: 1px solid #00ff00;
             position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
-            height: 100%;
-            background-size: cover;
-            filter: blur(5px);
-            z-index: -1;
+            bottom: 0;
         }
 
-        .social-icons {
-            position: fixed;
-            bottom: 50px;
-            left: 50%;
-            display: flex;
-            gap: 10px;
-            transform: translateX(-50%);
+        .footer p {
+            margin: 0;
         }
 
-        .social-icons a i, .social-icons a img {
-            font-size: 36px;
+        .footer a {
             color: #00ff00;
-            transition: color 0.3s, box-shadow 0.3s;
-            background: none;
-            box-shadow: none;
-            border: none;
-        }
-
-        .social-icons a {
             text-decoration: none;
-            transition: box-shadow 0.3s;
+            margin: 0 10px;
+            transition: color 0.3s;
         }
 
-        .social-icons a:hover i, .social-icons a:hover img {
+        .footer a:hover {
             color: #00cc00;
         }
 
-        .kritik-durum a {
-            box-shadow: none;
-        }
-
-        .kritik-durum a i, .kritik-durum a img {
-            color: #ff0000;
-            background: none;
-            border: none;
-        }
-
-        .kritik-durum a:hover i, .kritik-durum a:hover img {
-            color: #cc0000;
-        }
-
-        .footer {
-                    text-align: center;
-                    font-size: 14px;
-                    color: #ccc; 
-                    margin-top: 20px;
-                }
-
-        .footer p {
-                    margin: 0; 
-                }
-
-
-
-        .password-header {
-            font-size: 24px;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #00ff00;
-            display: inline-block;
-            padding-bottom: 5px;
-        }
-
-
-        .password-content {
-            margin-top: 10px;
-        }
-
-        .password-status {
+        .footer i {
             font-size: 18px;
-            margin-bottom: 15px;
-            color: #0aff0a;
-        }
-
-
-        .password-stats {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .stat-item {
-            background: #161616;
-            padding: 15px; 
-            margin: 10px 0; 
-            border-radius: 8px;
-            text-align: center;
-            border: 1px solid #00ff00;
-            box-shadow: 0 2px 10px rgba(0, 255, 0, 0.2);
-            transition: transform 0.3s;
-        }
-
-        .stat-item:hover {
-            transform: scale(1.1);
-        }
-
-        .stat-label {
-            display: block;
-            font-size: 16px;
-            margin-top: -5px;
-            color: #00ff00;
-        }
-
-        .stat-value {
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .password-status {
-            font-size: 23px; 
-            font-weight: bold; 
-            color: #0aff0a; 
-            text-shadow: 0 0 10px rgba(0, 255, 0, 0.7); 
-            margin-bottom: 20px; 
-            text-align: center;
+            margin-left: 5px;
         }
 
     </style>
@@ -326,15 +155,23 @@
     <div class="container" id="container">
         <h1 id="animatedTitle"></h1>
 
-        <div class="input-group"> <input type="text" id="passwordInput" placeholder="Enter your password.." autocomplete="off"> 
-            <button id="check-btn">Yoxla</button> 
+        <div class="input-group"> 
+            <input type="text" id="passwordInput" placeholder="Enter your password.." autocomplete="off"> 
+            <button id="check-btn">Check</button> 
         </div>
 
         <div id="loader" class="loader"></div>
         <p id="result" class="result"></p>
 
     </div>
-    
+
+    <div class="footer">
+        <p>
+            <a href="https://github.com/Rickidevs" target="_blank">
+                <i class="fab fa-github"></i> GitHub
+            </a>
+        </p>
+    </div>
     
     <script>
         const titleText = "Rick's Passwords";
@@ -348,39 +185,56 @@
             animatedTitle.appendChild(span);
         });
 
-        
         document.getElementById("check-btn").addEventListener("click", function() {
-        const password = document.getElementById("passwordInput").value; 
-        const resultDiv = document.getElementById("result");
+    const password = document.getElementById("passwordInput").value; 
+    const resultDiv = document.getElementById("result");
 
-        if (!password) {
-            resultDiv.textContent = "Please enter a password.";
-            resultDiv.style.color = "red";
-            return;
+    if (!password) {
+        resultDiv.textContent = "Please enter a password.";
+        resultDiv.style.color = "red";
+        return;
+    }
+
+    let score = 100;
+
+    if (password.length <= 9) score -= 10;
+
+    if (/\d{4}/.test(password)) {
+        const year = parseInt(password.match(/\d{4}/)[0], 10);
+        if (year >= 1900 && year <= 2050) {
+            score -= 40;
         }
+    }
 
-        let score = 0;
+    if (/^[A-Za-z0-9]+$/.test(password)) score -= 30;
 
-        if (password.length >= 8) score += 30;
-        else if (password.length >= 6) score += 20;
-        else score += 10;
+    if (/^[A-Z]/.test(password)) score -= 20;
 
-        if (/[A-Z]/.test(password)) score += 20;
+    if (!/[\W_]/.test(password)) score -= 25;
 
-        if (/[a-z]/.test(password)) score += 20;
+    if (!/[A-Z]/.test(password)) score -= 10;
 
-        if (/\d/.test(password)) score += 20;
+    if (/\s/.test(password)) score += 25;
 
-        if (/[\W_]/.test(password)) score += 10;
+    if (/(.)\1{2,}/.test(password)) score -= 5;
 
-        let strength = "Weak";
-        if (score >= 70) strength = "Strong";
-        else if (score >= 40) strength = "Medium";
+    if ((password.match(/[\W_]/g) || []).length < 2) score -= 7;
 
-        resultDiv.textContent = `Strength: ${strength} (Score: ${score}/100)`;
-        resultDiv.style.color = score >= 70 ? "#00ff00" : score >= 40 ? "#ffcc00" : "#ff0000";
-    });
+    if ((password.match(/[A-Z]/g) || []).length < 2) score -= 4;
 
+    if (/(?![A-Z]*[A-Z]{2})[A-Z]{2,}/.test(password)) score -= 4;
+
+    if (/(?![A-Z]*([A-Z])\1{1,})[A-Z]{2,}/.test(password)) score -= 7;
+
+    if (score < 0) score = 0;
+
+    let strength = "Weak";
+    if (score >= 70) strength = "Strong";
+    else if (score >= 40) strength = "Medium";
+
+    resultDiv.textContent = `Strength: ${strength} (Score: ${score}/100)`;
+    resultDiv.style.color = score >= 70 ? "#00ff00" : score >= 40 ? "#ffcc00" : "#ff0000";
+});
 
 
     </script>
