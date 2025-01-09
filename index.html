@@ -233,10 +233,10 @@
         else if (score >= 40) strength = "Medium";
 
         let crackTime = "";
-        if (score < 30) crackTime = "1 day";
-        else if (score < 50) crackTime = "1 week";
-        else if (score < 70) crackTime = "6 months";
-        else if (score < 90) crackTime = "10 years";
+        if (score < 30) crackTime = "< 1 day";
+        else if (score < 50) crackTime = "< 1 week";
+        else if (score < 70) crackTime = "< 6 months";
+        else if (score < 90) crackTime = "< 10 years";
         else crackTime = "100+ years";
 
         resultDiv.innerHTML = `
