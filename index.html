@@ -180,52 +180,64 @@
         const resultDiv = document.getElementById("result");
 
         if (password === "") {
-        resultDiv.innerHTML = "";
-        return; 
+            resultDiv.innerHTML = "";
+            return;
         }
 
-        let score = 100;
+        let score = 0;
+        if (password.length < 8) {
+            score -= 20;
+        } else if (password.length >= 8 && password.length <= 12) {
+            score += 10;
+        } else if (password.length > 12) {
+            score += 20;
+        }
 
-        if (password.length <= 9) score -= 10;
-        if (/\d{4}/.test(password)) {
-            const year = parseInt(password.match(/\d{4}/)[0], 10);
-            if (year >= 1900 && year <= 2050) score -= 40;
+        const hasLower = /[a-z]/.test(password);
+        const hasUpper = /[A-Z]/.test(password);
+        const hasDigit = /\d/.test(password);
+        const hasSpecial = /[\W_]/.test(password);
+
+        if (hasLower) score += 10;
+        if (hasUpper) score += 10;
+        if (hasDigit) score += 15;
+        if (hasSpecial) score += 20;
+
+        if (/^[A-Za-z]+$/.test(password)) {
+            score -= 10;
+            if (password.length > 20) {
+                score += 10;
+            }
         }
-        if (/^[A-Za-z0-9]+$/.test(password)) score -= 30;
-        if (/^[A-Za-z]+$/.test(password)) score -= 25;
-        if (/^[A-Z]+$/.test(password)) score -= 15;
-        if (/^[A-Z]/.test(password)) score -= 20;
-        if (!/[\W_]/.test(password)) score -= 25;
-        if (!/[A-Z]/.test(password)) score -= 10;
-        if (/^\s+$/.test(password)) {
-            score -= 69;
-        } else if (/\s/.test(password)) {
-            score += 25;
+
+        if (/[\u00C0-\u00FF\u0600-\u06FF]/.test(password)) {
+            score += 5;
         }
-        if (/(.)\1{2,}/.test(password)) score -= 5;
-        if ((password.match(/[\W_]/g) || []).length < 2) score -= 7;
-        if ((password.match(/[A-Z]/g) || []).length < 2) score -= 4;
-        if (/[A-Z]{2}/.test(password)) score -= 4;
-        if (/([A-Z])\1/.test(password)) score -= 7;
+
+        if (/(.)\1{2,}/.test(password)) {
+            score -= 10;
+        }
+
+        if (/^\d+$/.test(password)) {
+            score -= 25; 
+        }
+        if (/password|12345|qwerty|admin|test|123456|qwert123|passwrod123|admin123/i.test(password)) {
+            score -= 40; 
+        }
 
         if (score < 0) score = 0;
-        if (score > 100 ) score = 100;
+        if (score > 100) score = 100;
 
         let strength = "Weak";
         if (score >= 70) strength = "Strong";
         else if (score >= 40) strength = "Medium";
 
         let crackTime = "";
-        if (score < 5) crackTime = "1 minutes";
-        else if (score < 15) crackTime = "2 days";
-        else if (score < 30) crackTime = "1 month";
-        else if (score < 45) crackTime = "6 months";
-        else if (score < 55) crackTime = "5 years";
-        else if (score < 66) crackTime = "20 years";
-        else if (score < 70) crackTime = "100 years";
-        else if (score < 80) crackTime = "600 years";
-        else if (score < 90) crackTime = "1000 years";
-        else if (score >= 90) crackTime = "6000 years";
+        if (score < 30) crackTime = "1 day";
+        else if (score < 50) crackTime = "1 week";
+        else if (score < 70) crackTime = "6 months";
+        else if (score < 90) crackTime = "10 years";
+        else crackTime = "100+ years";
 
         resultDiv.innerHTML = `
             <strong>${strength}</strong> (Score: ${score}/100)<br>
@@ -233,6 +245,8 @@
         `;
         resultDiv.style.color = score >= 70 ? "#00ff00" : score >= 40 ? "#ffcc00" : "#ff0000";
     });
+
+    
 </script>
 </body>
 </html>
