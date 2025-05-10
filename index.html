@@ -1,252 +1,1 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>Rick's Passwords</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link type="image/png" sizes="96x96" rel="icon" href="https://img.icons8.com/plasticine/100/rick-sanchez.png">
-
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: #0f0f0f;
-            color: #00ff00;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: #1a1a1a;
-            border-radius: 8px;
-            box-shadow: 0 0 30px rgba(0, 255, 0, 0.8);
-            position: relative;
-            transition: transform 0.3s;
-        }
-
-        .container:hover {
-            transform: scale(1.05);
-        }
-
-        h1 {
-            text-align: center;
-            color: #00ff00;
-            text-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
-        }
-
-        .letter {
-            display: inline-block;
-            opacity: 0;
-            animation: sparkle 3s infinite;
-        }
-
-        @keyframes sparkle {
-            0% { opacity: 0.3; }
-            20% { opacity: 1; }
-            80% { opacity: 0.3; }
-            100% { opacity: 0.3; }
-        }
-
-        .input-group {
-            display: flex;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        input[type="text"] {
-            flex: 1;
-            padding: 10px;
-            font-size: 16px;
-            border: 1px solid #555;
-            background-color: #222;
-            color: #00ff00;
-            border-radius: 4px;
-            margin-right: 10px;
-            transition: border 0.3s;
-        }
-
-        input[type="text"]:focus {
-            border: 1px solid #00ff00;
-            outline: none;
-        }
-
-        .result {
-            margin-top: 20px;
-            font-weight: bold;
-            text-align: center;
-            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-            font-size: 24px;
-            transition: transform 0.5s, color 0.3s;
-        }
-
-        .result.exists {
-            color: red;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
-        }
-
-        .result.not-exists {
-            color: green;
-        }
-
-        .loader {
-            border: 8px solid #333;
-            border-top: 8px solid #00ff00;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-            display: none;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .footer {
-            text-align: center;
-            font-size: 14px;
-            color: #ccc;
-            padding: 10px 0;
-            background-color: #1a1a1a;
-            border-top: 1px solid #00ff00;
-            position: absolute;
-            width: 100%;
-            bottom: 0;
-        }
-
-
-        .footer a {
-            color: #00ff00;
-            text-decoration: none;
-            margin: 0 10px;
-            transition: color 0.3s;
-        }
-
-        .footer a:hover {
-            color: #00cc00;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                margin-top: 70px;
-                margin-right: 20px;
-                margin-left: 20px;
-            }
-        }
-
-    </style>
-</head>
-<body>
-    <div class="container" id="container">
-        <h1 id="animatedTitle"></h1>
-
-        <div class="input-group">
-            <input type="text" id="passwordInput" placeholder="Enter your password.." autocomplete="off">
-        </div>
-
-        <div id="loader" class="loader"></div>
-        <p id="result" class="result"></p>
-    </div>
-
-    <div class="footer">
-        <p>
-            <a href="https://github.com/Rickidevs/RickPass.github.io/blob/main/README.md" target="_blank">
-                <i class="fab fa-github"></i> GitHub
-            </a>
-        </p>
-    </div>
-    
-    <script>
-        const titleText = "Rick's Passwords";
-        const animatedTitle = document.getElementById("animatedTitle");
-
-        titleText.split('').forEach((char, index) => {
-            const span = document.createElement('span');
-            span.textContent = char === ' ' ? '\u00A0' : char;
-            span.style.animationDelay = `${index * 0.1}s`;
-            span.className = 'letter';
-            animatedTitle.appendChild(span);
-        });
-
-        document.getElementById("passwordInput").addEventListener("input", function () {
-        const password = this.value;
-        const resultDiv = document.getElementById("result");
-
-        if (password === "") {
-            resultDiv.innerHTML = "";
-            return;
-        }
-
-        let score = 0;
-        if (password.length < 8) {
-            score -= 20;
-        } else if (password.length >= 8 && password.length <= 12) {
-            score += 10;
-        } else if (password.length > 12) {
-            score += 20;
-        }
-
-        const hasLower = /[a-z]/.test(password);
-        const hasUpper = /[A-Z]/.test(password);
-        const hasDigit = /\d/.test(password);
-        const hasSpecial = /[\W_]/.test(password);
-
-        if (hasLower) score += 10;
-        if (hasUpper) score += 10;
-        if (hasDigit) score += 15;
-        if (hasSpecial) score += 20;
-
-        if (/^[A-Za-z]+$/.test(password)) {
-            score -= 10;
-            if (password.length > 20) {
-                score += 10;
-            }
-        }
-
-        if (/[\u00C0-\u00FF\u0600-\u06FF]/.test(password)) {
-            score += 5;
-        }
-
-        if (/(.)\1{2,}/.test(password)) {
-            score -= 10;
-        }
-
-        if (/^\d+$/.test(password)) {
-            score -= 25; 
-        }
-        if (/password|12345|qwerty|admin|test|123456|qwert123|passwrod123|admin123/i.test(password)) {
-            score -= 40; 
-        }
-
-        if (score < 0) score = 0;
-        if (score > 100) score = 100;
-
-        let strength = "Weak";
-        if (score >= 70) strength = "Strong";
-        else if (score >= 40) strength = "Medium";
-
-        let crackTime = "";
-        if (score < 30) crackTime = "< 1 day";
-        else if (score < 50) crackTime = "< 1 week";
-        else if (score < 70) crackTime = "< 6 months";
-        else if (score < 90) crackTime = "< 10 years";
-        else crackTime = "100+ years";
-
-        resultDiv.innerHTML = `
-            <strong>${strength}</strong> (Score: ${score}/100)<br>
-            crack time: <strong>${crackTime}</strong>
-        `;
-        resultDiv.style.color = score >= 70 ? "#00ff00" : score >= 40 ? "#ffcc00" : "#ff0000";
-    });
-
-    
-</script>
-</body>
-</html>
+<script>var s="=\"EPDUZQF!iunm?=iunm!mboh>#fo#?=ifbe?!!!!=nfub!dibstfu>#VUG.9#?!!!!=nfub!obnf>#wjfxqpsu#!dpoufou>#xjeui>efwjdf.xjeui-!jojujbm.tdbmf>2-!nbyjnvn.tdbmf>2-!vtfs.tdbmbcmf>op#?!!!!=ujumf?SjdlQbtt!0!Fmwjo!Mbujgmj=0ujumf?!!!!=mjol!uzqf>#jnbhf0qoh#!tj{ft>#:7y:7#!sfm>#jdpo#!isfg>#iuuqt;00jnh/jdpot9/dpn0qmbtujdjof02110sjdl.tbodif{/qoh#?!!!!=mjol!isfg>#iuuqt;00gpout/hpphmfbqjt/dpn0dtt3@gbnjmz>Spcpup;xhiuA411<511<611<811\'gbnjmz>KfuCsbjot,Npop;xhiuA511<811\'ejtqmbz>txbq#!sfm>#tuzmftiffu#?!!!!=mjol!sfm>#tuzmftiffu#!isfg>#iuuqt;00deokt/dmpvegmbsf/dpn0bkby0mjct0gpou.bxftpnf07/1/1.cfub40dtt0bmm/njo/dtt#?=0ifbe?=tuzmf?!!!!;sppu!|!!!!!!!!..qsjnbsz.dpmps;!$7d74gg<!!!!!!!!..qsjnbsz.ebsl;!$675ge9<!!!!!!!!..ebohfs.dpmps;!$gg5e5e<!!!!!!!!..xbsojoh.dpmps;!$ggc85e<!!!!!!!!..tvddftt.dpmps;!$5dbg61<!!!!!!!!..jogp.dpmps;!$5ebcg8<!!!!!!!!..ebsl.dpmps;!$232323<!!!!!!!!..ebsl.tfdpoebsz;!$2f2f2f<!!!!!!!!..ebsl.ufsujbsz;!$3e3e3e<!!!!!!!!..mjhiu.dpmps;!$f1f1f1<!!!!!!!!..mjhiu.tfdpoebsz;!$c1c1c1<!!!!!!!!..hsbz.dpmps;!$6g7479<!!!!!!!!..gpou.nbjo;!(Spcpup(-!tbot.tfsjg<!!!!!!!!..gpou.npop;!(KfuCsbjot!Npop(-!npoptqbdf<!!!!~!!!!+!|!!!!!!!!nbshjo;!1<!!!!!!!!qbeejoh;!1<!!!!!!!!cpy.tj{joh;!cpsefs.cpy<!!!!!!!!gpou.gbnjmz;!wbs)..gpou.nbjo*<!!!!~!!!!cpez!|!!!!!!!!cbdlhspvoe.dpmps;!wbs)..ebsl.dpmps*<!!!!!!!!dpmps;!wbs)..mjhiu.dpmps*<!!!!!!!!njo.ifjhiu;!211wi<!!!!!!!!ejtqmbz;!gmfy<!!!!!!!!kvtujgz.dpoufou;!dfoufs<!!!!!!!!bmjho.jufnt;!dfoufs<!!!!!!!!qbeejoh;!31qy<!!!!!!!!mjof.ifjhiu;!2/7<!!!!~!!!!/dpoubjofs!|!!!!!!!!xjeui;!211&<!!!!!!!!nby.xjeui;!711qy<!!!!~!!!!/qbttxpse.difdlfs!|!!!!!!!!cbdlhspvoe.dpmps;!wbs)..ebsl.tfdpoebsz*<!!!!!!!!cpsefs.sbejvt;!27qy<!!!!!!!!cpy.tibepx;!1!21qy!41qy!shcb)1-!1-!1-!1/6*<!!!!!!!!qbeejoh;!41qy<!!!!!!!!qptjujpo;!sfmbujwf<!!!!!!!!pwfsgmpx;!ijeefo<!!!!!!!!{.joefy;!2<!!!!!!!!cpsefs;!2qy!tpmje!wbs)..ebsl.ufsujbsz*<!!!!~!!!!/qbttxpse.difdlfs;;cfgpsf!|!!!!!!!!dpoufou;!((<!!!!!!!!qptjujpo;!bctpmvuf<!!!!!!!!upq;!1<!!!!!!!!mfgu;!1<!!!!!!!!xjeui;!211&<!!!!!!!!ifjhiu;!5qy<!!!!!!!!cbdlhspvoe;!mjofbs.hsbejfou):1efh-!wbs)..ebohfs.dpmps*-!wbs)..xbsojoh.dpmps*-!wbs)..tvddftt.dpmps**<!!!!!!!!{.joefy;!.2<!!!!~!!!!/ifbefs!|!!!!!!!!ufyu.bmjho;!dfoufs<!!!!!!!!nbshjo.cpuupn;!36qy<!!!!~!!!!/ifbefs!i2!|!!!!!!!!dpmps;!wbs)..qsjnbsz.dpmps*<!!!!!!!!gpou.tj{f;!39qy<!!!!!!!!nbshjo.cpuupn;!9qy<!!!!!!!!ejtqmbz;!gmfy<!!!!!!!!bmjho.jufnt;!dfoufs<!!!!!!!!kvtujgz.dpoufou;!dfoufs<!!!!!!!!hbq;!21qy<!!!!~!!!!/ifbefs!q!|!!!!!!!!dpmps;!wbs)..mjhiu.tfdpoebsz*<!!!!!!!!gpou.tj{f;!25qy<!!!!~!!!!/joqvu.hspvq!|!!!!!!!!qptjujpo;!sfmbujwf<!!!!!!!!nbshjo.cpuupn;!31qy<!!!!~!!!!/joqvu.hspvq!joqvu!|!!!!!!!!xjeui;!211&<!!!!!!!!qbeejoh;!26qy!221qy!26qy!26qy<!!!!!!!!cbdlhspvoe.dpmps;!wbs)..ebsl.ufsujbsz*<!!!!!!!!cpsefs;!3qy!tpmje!wbs)..ebsl.ufsujbsz*<!!!!!!!!cpsefs.sbejvt;!9qy<!!!!!!!!gpou.tj{f;!27qy<!!!!!!!!gpou.gbnjmz;!wbs)..gpou.npop*<!!!!!!!!dpmps;!wbs)..mjhiu.dpmps*<!!!!!!!!usbotjujpo;!bmm!1/4t!fbtf<!!!!~!!!!/joqvu.hspvq!joqvu;gpdvt!|!!!!!!!!pvumjof;!opof<!!!!!!!!cpsefs.dpmps;!wbs)..qsjnbsz.dpmps*<!!!!!!!!cpy.tibepx;!1!1!1!4qy!shcb)219-!::-!366-!1/3*<!!!!~!!!!/joqvu.hspvq!joqvu;;qmbdfipmefs!|!!!!!!!!dpmps;!wbs)..hsbz.dpmps*<!!!!~!!!!/joqvu.cvuupot!|!!!!!!!!qptjujpo;!bctpmvuf<!!!!!!!!sjhiu;!6qy<!!!!!!!!upq;!61&<!!!!!!!!usbotgpsn;!usbotmbufZ).61&*<!!!!!!!!ejtqmbz;!gmfy<!!!!!!!!hbq;!6qy<!!!!~!!!!/joqvu.cvuupot!cvuupo!|!!!!!!!!cbdlhspvoe.dpmps;!wbs)..ebsl.ufsujbsz*<!!!!!!!!cpsefs;!opof<!!!!!!!!xjeui;!47qy<!!!!!!!!ifjhiu;!47qy<!!!!!!!!cpsefs.sbejvt;!7qy<!!!!!!!!dvstps;!qpjoufs<!!!!!!!!dpmps;!wbs)..mjhiu.tfdpoebsz*<!!!!!!!!gpou.tj{f;!25qy<!!!!!!!!usbotjujpo;!bmm!1/3t!fbtf<!!!!!!!!ejtqmbz;!gmfy<!!!!!!!!bmjho.jufnt;!dfoufs<!!!!!!!!kvtujgz.dpoufou;!dfoufs<!!!!~!!!!/joqvu.cvuupot!cvuupo;ipwfs!|!!!!!!!!cbdlhspvoe.dpmps;!wbs)..qsjnbsz.dpmps*<!!!!!!!!dpmps;!xijuf<!!!!~!!!!/qbttxpse.tubut!|!!!!!!!!ejtqmbz;!gmfy<!!!!!!!!kvtujgz.dpoufou;!tqbdf.cfuxffo<!!!!!!!!nbshjo.cpuupn;!31qy<!!!!!!!!cbdlhspvoe.dpmps;!wbs)..ebsl.ufsujbsz*<!!!!!!!!cpsefs.sbejvt;!9qy<!!!!!!!!qbeejoh;!23qy<!!!!~!!!!/tubu!|!!!!!!!!ufyu.bmjho;!dfoufs<!!!!!!!!gmfy;!2<!!!!~!!!!/tubu.wbmvf!|!!!!!!!!gpou.tj{f;!31qy<!!!!!!!!gpou.xfjhiu;!811<!!!!!!!!gpou.gbnjmz;!wbs)..gpou.npop*<!!!!!!!!dpmps;!wbs)..qsjnbsz.dpmps*<!!!!!!!!ejtqmbz;!cmpdl<!!!!~!!!!/tubu.mbcfm!|!!!!!!!!gpou.tj{f;!23qy<!!!!!!!!dpmps;!wbs)..mjhiu.tfdpoebsz*<!!!!!!!!ufyu.usbotgpsn;!vqqfsdbtf<!!!!!!!!mfuufs.tqbdjoh;!1/6qy<!!!!~!!!!/tusfohui.nfufs!|!!!!!!!!nbshjo.cpuupn;!26qy<!!!!~!!!!/nfufs.mbcfmt!|!!!!!!!!ejtqmbz;!gmfy<!!!!!!!!kvtujgz.dpoufou;!tqbdf.cfuxffo<!!!!!!!!nbshjo.cpuupn;!6qy<!!!!!!!!gpou.tj{f;!23qy<!!!!!!!!dpmps;!wbs)..mjhiu.tfdpoebsz*<!!!!~!!!!/nfufs.cbs.dpoubjofs!|!!!!!!!!ifjhiu;!21qy<!!!!!!!!cbdlhspvoe.dpmps;!wbs)..ebsl.ufsujbsz*<!!!!!!!!cpsefs.sbejvt;!6qy<!!!!!!!!pwfsgmpx;!ijeefo<!!!!~!!!!/nfufs.cbs!|!!!!!!!!ifjhiu;!211&<!!!!!!!!xjeui;!1<!!!!!!!!cbdlhspvoe.dpmps;!wbs)..ebohfs.dpmps*<!!!!!!!!cpsefs.sbejvt;!6qy<!!!!!!!!usbotjujpo;!bmm!1/6t!dvcjd.cf{jfs)1/79-!.1/66-!1/38-!2/66*<!!!!~!!!!/tusfohui.efubjmt!|!!!!!!!!ejtqmbz;!gmfy<!!!!!!!!kvtujgz.dpoufou;!tqbdf.cfuxffo<!!!!!!!!bmjho.jufnt;!dfoufs<!!!!!!!!nbshjo.cpuupn;!36qy<!!!!~!!!!/tusfohui.mbcfm!|!!!!!!!!ejtqmbz;!gmfy<!!!!!!!!bmjho.jufnt;!dfoufs<!!!!!!!!hbq;!21qy<!!!!!!!!gpou.tj{f;!29qy<!!!!!!!!gpou.xfjhiu;!811<!!!!~!!!!/tusfohui.mbcfm!/tdpsf!|!!!!!!!!gpou.tj{f;!25qy<!!!!!!!!dpmps;!wbs)..mjhiu.tfdpoebsz*<!!!!!!!!gpou.gbnjmz;!wbs)..gpou.npop*<!!!!~!!!!/ujnf.up.dsbdl!|!!!!!!!!gpou.tj{f;!25qy<!!!!!!!!dpmps;!wbs)..mjhiu.tfdpoebsz*<!!!!~!!!!/ujnf.up.dsbdl!tqbo!|!!!!!!!!dpmps;!wbs)..mjhiu.dpmps*<!!!!!!!!gpou.xfjhiu;!611<!!!!~!!!!/sfrvjsfnfout!|!!!!!!!!nbshjo.cpuupn;!36qy<!!!!~!!!!/sfrvjsfnfout!i4!|!!!!!!!!gpou.tj{f;!27qy<!!!!!!!!nbshjo.cpuupn;!26qy<!!!!!!!!dpmps;!wbs)..qsjnbsz.dpmps*<!!!!!!!!ejtqmbz;!gmfy<!!!!!!!!bmjho.jufnt;!dfoufs<!!!!!!!!hbq;!21qy<!!!!~!!!!/sfrvjsfnfout!vm!|!!!!!!!!mjtu.tuzmf;!opof<!!!!!!!!ejtqmbz;!hsje<!!!!!!!!hsje.ufnqmbuf.dpmvnot;!2gs!2gs<!!!!!!!!hbq;!21qy<!!!!~!!!!/sfrvjsfnfout!mj!|!!!!!!!!nbshjo.cpuupn;!9qy<!!!!!!!!gpou.tj{f;!25qy<!!!!!!!!ejtqmbz;!gmfy<!!!!!!!!bmjho.jufnt;!gmfy.tubsu<!!!!!!!!hbq;!9qy<!!!!!!!!dpmps;!wbs)..mjhiu.tfdpoebsz*<!!!!~!!!!/sfrvjsfnfout!mj!j!|!!!!!!!!gpou.tj{f;!27qy<!!!!!!!!dpmps;!wbs)..ebsl.ufsujbsz*<!!!!!!!!nbshjo.upq;!3qy<!!!!~!!!!/sfrvjsfnfout!mj/wbmje!j!|!!!!!!!!dpmps;!wbs)..tvddftt.dpmps*<!!!!~!!!!/sfr.efubjm!|!!!!!!!!gpou.tj{f;!23qy<!!!!!!!!dpmps;!wbs)..hsbz.dpmps*<!!!!!!!!gpou.tuzmf;!jubmjd<!!!!~!!!!/qbttxpse.bobmztjt!|!!!!!!!!nbshjo.cpuupn;!36qy<!!!!~!!!!/qbttxpse.bobmztjt!i4!|!!!!!!!!gpou.tj{f;!27qy<!!!!!!!!nbshjo.cpuupn;!26qy<!!!!!!!!dpmps;!wbs)..qsjnbsz.dpmps*<!!!!!!!!ejtqmbz;!gmfy<!!!!!!!!bmjho.jufnt;!dfoufs<!!!!!!!!hbq;!21qy<!!!!~!!!!/dibstfu.csfblepxo!|!!!!!!!!cbdlhspvoe.dpmps;!wbs)..ebsl.ufsujbsz*<!!!!!!!!cpsefs.sbejvt;!9qy<!!!!!!!!qbeejoh;!26qy<!!!!~!!!!/csfblepxo.cbs!|!!!!!!!!ifjhiu;!21qy<!!!!!!!!cbdlhspvoe.dpmps;!wbs)..ebsl.tfdpoebsz*<!!!!!!!!cpsefs.sbejvt;!6qy<!!!!!!!!pwfsgmpx;!ijeefo<!!!!!!!!ejtqmbz;!gmfy<!!!!!!!!nbshjo.cpuupn;!26qy<!!!!~!!!!/csfblepxo.tfhnfou!|!!!!!!!!ifjhiu;!211&<!!!!!!!!usbotjujpo;!bmm!1/6t!fbtf<!!!!~!!!!/csfblepxo.mfhfoe!|!!!!!!!!ejtqmbz;!gmfy<!!!!!!!!gmfy.xsbq;!xsbq<!!!!!!!!hbq;!26qy<!!!!~!!!!/mfhfoe.jufn!|!!!!!!!!ejtqmbz;!gmfy<!!!!!!!!bmjho.jufnt;!dfoufs<!!!!!!!!hbq;!7qy<!!!!!!!!gpou.tj{f;!23qy<!!!!!!!!dpmps;!wbs)..mjhiu.tfdpoebsz*<!!!!~!!!!/mfhfoe.dpmps!|!!!!!!!!xjeui;!23qy<!!!!!!!!ifjhiu;!23qy<!!!!!!!!cpsefs.sbejvt;!4qy<!!!!~!!!!/mfhfoe.dpmps/mpxfs!|!cbdlhspvoe.dpmps;!$5dbg61<!~!!!!/mfhfoe.dpmps/vqqfs!|!cbdlhspvoe.dpmps;!$32:7g4<!~!!!!/mfhfoe.dpmps/ovncfs!|!cbdlhspvoe.dpmps;!$gg:911<!~!!!!/mfhfoe.dpmps/tqfdjbm!|!cbdlhspvoe.dpmps;!$g55447<!~!!!!/ujqt!|!!!!!!!!nbshjo.cpuupn;!21qy<!!!!~!!!!/ujqt!i4!|!!!!!!!!gpou.tj{f;!27qy<!!!!!!!!nbshjo.cpuupn;!26qy<!!!!!!!!dpmps;!wbs)..qsjnbsz.dpmps*<!!!!!!!!ejtqmbz;!gmfy<!!!!!!!!bmjho.jufnt;!dfoufs<!!!!!!!!hbq;!21qy<!!!!~!!!!/ujq.dbset!|!!!!!!!!ejtqmbz;!hsje<!!!!!!!!hsje.ufnqmbuf.dpmvnot;!2gs!2gs<!!!!!!!!hbq;!21qy<!!!!~!!!!/ujq.dbse!|!!!!!!!!cbdlhspvoe.dpmps;!wbs)..ebsl.ufsujbsz*<!!!!!!!!cpsefs.sbejvt;!9qy<!!!!!!!!qbeejoh;!23qy<!!!!!!!!ejtqmbz;!gmfy<!!!!!!!!bmjho.jufnt;!dfoufs<!!!!!!!!hbq;!21qy<!!!!~!!!!/ujq.dbse!j!|!!!!!!!!dpmps;!wbs)..qsjnbsz.dpmps*<!!!!!!!!gpou.tj{f;!27qy<!!!!~!!!!/ujq.dbse!q!|!!!!!!!!gpou.tj{f;!24qy<!!!!!!!!dpmps;!wbs)..mjhiu.tfdpoebsz*<!!!!~!!!!/bojnbujpo.dpoubjofs!|!!!!!!!!qptjujpo;!gjyfe<!!!!!!!!cpuupn;!31qy<!!!!!!!!sjhiu;!31qy<!!!!!!!!ejtqmbz;!gmfy<!!!!!!!!gmfy.ejsfdujpo;!dpmvno<!!!!!!!!bmjho.jufnt;!gmfy.foe<!!!!!!!!hbq;!26qy<!!!!~!!!!/tijfme.bojnbujpo!|!!!!!!!!gpou.tj{f;!71qy<!!!!!!!!dpmps;!wbs)..qsjnbsz.dpmps*<!!!!!!!!bojnbujpo;!qvmtf!3t!jogjojuf<!!!!!!!!gjmufs;!espq.tibepx)1!1!6qy!shcb)219-!::-!366-!1/6**<!!!!~!!!!/ibdlfs.bojnbujpo!|!!!!!!!!gpou.tj{f;!51qy<!!!!!!!!dpmps;!wbs)..ebohfs.dpmps*<!!!!!!!!pqbdjuz;!1<!!!!!!!!usbotgpsn;!usbotmbufY)211qy*<!!!!!!!!usbotjujpo;!bmm!1/6t!fbtf<!!!!~!!!!/opujgjdbujpo!|!!!!!!!!qptjujpo;!gjyfe<!!!!!!!!upq;!31qy<!!!!!!!!mfgu;!61&<!!!!!!!!usbotgpsn;!usbotmbufY).61&*<!!!!!!!!cbdlhspvoe.dpmps;!wbs)..qsjnbsz.ebsl*<!!!!!!!!dpmps;!xijuf<!!!!!!!!qbeejoh;!23qy!31qy<!!!!!!!!cpsefs.sbejvt;!9qy<!!!!!!!!cpy.tibepx;!1!5qy!23qy!shcb)1-!1-!1-!1/4*<!!!!!!!!{.joefy;!2111<!!!!!!!!pqbdjuz;!1<!!!!!!!!usbotjujpo;!bmm!1/4t!fbtf<!!!!!!!!gpou.tj{f;!25qy<!!!!!!!!qpjoufs.fwfout;!opof<!!!!~!!!!/opujgjdbujpo/tipx!|!!!!!!!!pqbdjuz;!2<!!!!!!!!usbotgpsn;!usbotmbufY).61&*!usbotmbufZ)21qy*<!!!!~!!!!Alfzgsbnft!qvmtf!|!!!!!!!!1&!|!!!!!!!!!!!!usbotgpsn;!tdbmf)2*<!!!!!!!!~!!!!!!!!61&!|!!!!!!!!!!!!usbotgpsn;!tdbmf)2/2*<!!!!!!!!~!!!!!!!!211&!|!!!!!!!!!!!!usbotgpsn;!tdbmf)2*<!!!!!!!!~!!!!~!!!!Alfzgsbnft!tiblf!|!!!!!!!!1&-!211&!|!usbotgpsn;!usbotmbufY)1*!spubuf)1*<!~!!!!!!!!31&!|!usbotgpsn;!usbotmbufY).21qy*!spubuf).6efh*<!~!!!!!!!!51&!|!usbotgpsn;!usbotmbufY)21qy*!spubuf)6efh*<!~!!!!!!!!71&!|!usbotgpsn;!usbotmbufY).21qy*!spubuf).6efh*<!~!!!!!!!!91&!|!usbotgpsn;!usbotmbufY)21qy*!spubuf)6efh*<!~!!!!~!!!!Alfzgsbnft!gmpbu!|!!!!!!!!1&-!211&!|!usbotgpsn;!usbotmbufZ)1*<!~!!!!!!!!61&!|!usbotgpsn;!usbotmbufZ).26qy*<!~!!!!~!!!!Alfzgsbnft!buubdl!|!!!!!!!!1&!|!usbotgpsn;!usbotmbufY)211qy*<!~!!!!!!!!61&!|!usbotgpsn;!usbotmbufY).31qy*<!~!!!!!!!!211&!|!usbotgpsn;!usbotmbufY)1*<!~!!!!~!!!!0+!Sftqpotjwf!Eftjho!+0!!!!Anfejb!)nby.xjeui;!879qy*!|!!!!!!!!/sfrvjsfnfout!vm!|!!!!!!!!!!!!hsje.ufnqmbuf.dpmvnot;!2gs<!!!!!!!!~!!!!!!!!!!!!!!!!/ujq.dbset!|!!!!!!!!!!!!hsje.ufnqmbuf.dpmvnot;!2gs<!!!!!!!!~!!!!!!!!!!!!!!!!/tusfohui.efubjmt!|!!!!!!!!!!!!gmfy.ejsfdujpo;!dpmvno<!!!!!!!!!!!!bmjho.jufnt;!gmfy.tubsu<!!!!!!!!!!!!hbq;!21qy<!!!!!!!!~!!!!~!!!!Anfejb!)nby.xjeui;!591qy*!|!!!!!!!!/qbttxpse.difdlfs!|!!!!!!!!!!!!qbeejoh;!31qy<!!!!!!!!~!!!!!!!!!!!!!!!!/ifbefs!i2!|!!!!!!!!!!!!gpou.tj{f;!35qy<!!!!!!!!~!!!!!!!!!!!!!!!!/qbttxpse.tubut!|!!!!!!!!!!!!gmfy.ejsfdujpo;!dpmvno<!!!!!!!!!!!!hbq;!26qy<!!!!!!!!~!!!!!!!!!!!!!!!!/joqvu.hspvq!joqvu!|!!!!!!!!!!!!qbeejoh.sjhiu;!26qy<!!!!!!!!~!!!!!!!!!!!!!!!!/joqvu.cvuupot!|!!!!!!!!!!!!qptjujpo;!tubujd<!!!!!!!!!!!!usbotgpsn;!opof<!!!!!!!!!!!!kvtujgz.dpoufou;!gmfy.foe<!!!!!!!!!!!!nbshjo.upq;!21qy<!!!!!!!!~!!!!!!!!!!!!!!!!/bojnbujpo.dpoubjofs!|!!!!!!!!!!!!ejtqmbz;!opof<!!!!!!!!~!!!!~=0tuzmf?=cpez?!!!!!!!!=ejw!dmbtt>#dpoubjofs#?!!!!!!!!=ejw!dmbtt>#qbttxpse.difdlfs#?!!!!!!!!!!!!=ejw!dmbtt>#ifbefs#?!!!!!!!!!!!!!!!!=q?Bobmz{f!zpvs!qbttxpse!tfdvsjuz!mfwfm!jo!efubjm=0q?!!!!!!!!!!!!=0ejw?!!!!!!!!!!!!!!!!!!!!!!!!=ejw!dmbtt>#joqvu.hspvq#?!!!!!!!!!!!!!!!!=joqvu!uzqf>#qbttxpse#!je>#qbttxpseJoqvu#!qmbdfipmefs>#Foufs!zpvs!qbttxpse///#!bvupdpnqmfuf>#pgg#?!!!!!!!!!!!!!!!!=ejw!dmbtt>#joqvu.cvuupot#?!!!!!!!!!!!!!!!!!!!!=cvuupo!je>#uphhmfWjtjcjmjuz#!ujumf>#Tipx0Ijef#?=j!dmbtt>#gbs!gb.fzf#?=0j?=0cvuupo?!!!!!!!!!!!!!!!!!!!!=cvuupo!je>#hfofsbufQbttxpse#!ujumf>#Hfofsbuf!Sboepn!Qbttxpse#?=j!dmbtt>#gbt!gb.ejdf#?=0j?=0cvuupo?!!!!!!!!!!!!!!!!!!!!=cvuupo!je>#dpqzQbttxpse#!ujumf>#Dpqz!up!Dmjqcpbse#?=j!dmbtt>#gbs!gb.dpqz#?=0j?=0cvuupo?!!!!!!!!!!!!!!!!=0ejw?!!!!!!!!!!!!=0ejw?!!!!!!!!!!!!!!!!!!!!!!!!=ejw!dmbtt>#qbttxpse.tubut#?!!!!!!!!!!!!!!!!=ejw!dmbtt>#tubu#?!!!!!!!!!!!!!!!!!!!!=tqbo!dmbtt>#tubu.wbmvf#!je>#mfohuiDpvou#?1=0tqbo?!!!!!!!!!!!!!!!!!!!!=tqbo!dmbtt>#tubu.mbcfm#?Dibst=0tqbo?!!!!!!!!!!!!!!!!=0ejw?!!!!!!!!!!!!!!!!=ejw!dmbtt>#tubu#?!!!!!!!!!!!!!!!!!!!!=tqbo!dmbtt>#tubu.wbmvf#!je>#vojrvfDpvou#?1=0tqbo?!!!!!!!!!!!!!!!!!!!!=tqbo!dmbtt>#tubu.mbcfm#?Vojrvf=0tqbo?!!!!!!!!!!!!!!!!=0ejw?!!!!!!!!!!!!!!!!=ejw!dmbtt>#tubu#?!!!!!!!!!!!!!!!!!!!!=tqbo!dmbtt>#tubu.wbmvf#!je>#fouspqzWbmvf#?1=0tqbo?!!!!!!!!!!!!!!!!!!!!=tqbo!dmbtt>#tubu.mbcfm#?Fouspqz=0tqbo?!!!!!!!!!!!!!!!!=0ejw?!!!!!!!!!!!!=0ejw?!!!!!!!!!!!!!!!!!!!!!!!!=ejw!dmbtt>#tusfohui.nfufs#?!!!!!!!!!!!!!!!!=ejw!dmbtt>#nfufs.mbcfmt#?!!!!!!!!!!!!!!!!!!!!=tqbo?Xfbl=0tqbo?!!!!!!!!!!!!!!!!!!!!=tqbo?Nfejvn=0tqbo?!!!!!!!!!!!!!!!!!!!!=tqbo?Tuspoh=0tqbo?!!!!!!!!!!!!!!!!!!!!=tqbo?Wfsz!Tuspoh=0tqbo?!!!!!!!!!!!!!!!!=0ejw?!!!!!!!!!!!!!!!!=ejw!dmbtt>#nfufs.cbs.dpoubjofs#?!!!!!!!!!!!!!!!!!!!!=ejw!dmbtt>#nfufs.cbs#!je>#nfufsCbs#?=0ejw?!!!!!!!!!!!!!!!!=0ejw?!!!!!!!!!!!!=0ejw?!!!!!!!!!!!!!!!!!!!!!!!!=ejw!dmbtt>#tusfohui.efubjmt#?!!!!!!!!!!!!!!!!=ejw!dmbtt>#tusfohui.mbcfm#!je>#tusfohuiMbcfm#?!!!!!!!!!!!!!!!!!!!!=tqbo!je>#tusfohuiUfyu#?Foufs!Qbttxpse=0tqbo?!!!!!!!!!!!!!!!!!!!!=tqbo!dmbtt>#tdpsf#!je>#tusfohuiTdpsf#?1023=0tqbo?!!!!!!!!!!!!!!!!=0ejw?!!!!!!!!!!!!!!!!=ejw!dmbtt>#ujnf.up.dsbdl#!je>#ujnfUpDsbdl#?Ujnf!up!dsbdl;!=tqbo?1!tfdpoet=0tqbo?=0ejw?!!!!!!!!!!!!=0ejw?!!!!!!!!!!!!!!!!!!!!!!!!=ejw!dmbtt>#sfrvjsfnfout#?!!!!!!!!!!!!!!!!=i4?=j!dmbtt>#gbt!gb.mjtu.difdl#?=0j?!Qbttxpse!Sfrvjsfnfout;=0i4?!!!!!!!!!!!!!!!!=vm?!!!!!!!!!!!!!!!!!!!!=mj!je>#mfohui#?=j!dmbtt>#gbt!gb.difdl.djsdmf#?=0j?!Njojnvn!23!dibst!=tqbo!dmbtt>#sfr.efubjm#?)27,!sfdpnnfoefe*=0tqbo?=0mj?!!!!!!!!!!!!!!!!!!!!=mj!je>#vqqfsdbtf#?=j!dmbtt>#gbt!gb.difdl.djsdmf#?=0j?!Dpoubjot!vqqfsdbtf!)B.[*=0mj?!!!!!!!!!!!!!!!!!!!!=mj!je>#mpxfsdbtf#?=j!dmbtt>#gbt!gb.difdl.djsdmf#?=0j?!Dpoubjot!mpxfsdbtf!)b.{*=0mj?!!!!!!!!!!!!!!!!!!!!=mj!je>#ovncfs#?=j!dmbtt>#gbt!gb.difdl.djsdmf#?=0j?!Dpoubjot!ovncfs!)1.:*=0mj?!!!!!!!!!!!!!!!!!!!!=mj!je>#tqfdjbm#?=j!dmbtt>#gbt!gb.difdl.djsdmf#?=0j?!Dpoubjot!tqfdjbm!dibs!)\"A$%&_\'+*=0mj?!!!!!!!!!!!!!!!!!!!!=mj!je>#sfqfbu#?=j!dmbtt>#gbt!gb.difdl.djsdmf#?=0j?!Op!sfqfbujoh!dibsbdufst=0mj?!!!!!!!!!!!!!!!!!!!!=mj!je>#tfrvfodf#?=j!dmbtt>#gbt!gb.difdl.djsdmf#?=0j?!Op!tfrvfoujbm!qbuufsot=0mj?!!!!!!!!!!!!!!!!!!!!=mj!je>#dpnnpo#?=j!dmbtt>#gbt!gb.difdl.djsdmf#?=0j?!Opu!b!dpnnpo!qbttxpse=0mj?!!!!!!!!!!!!!!!!=0vm?!!!!!!!!!!!!=0ejw?!!!!!!!!!!!!!!!!!!!!!!!!=ejw!dmbtt>#qbttxpse.bobmztjt#?!!!!!!!!!!!!!!!!=i4?=j!dmbtt>#gbt!gb.dibsu.qjf#?=0j?!Dibsbdufs!Ejtusjcvujpo;=0i4?!!!!!!!!!!!!!!!!=ejw!dmbtt>#dibstfu.csfblepxo#?!!!!!!!!!!!!!!!!!!!!=ejw!dmbtt>#csfblepxo.cbs#?!!!!!!!!!!!!!!!!!!!!!!!!=ejw!dmbtt>#csfblepxo.tfhnfou#!je>#mpxfsTfhnfou#!ujumf>#Mpxfsdbtf!Mfuufst#?=0ejw?!!!!!!!!!!!!!!!!!!!!!!!!=ejw!dmbtt>#csfblepxo.tfhnfou#!je>#vqqfsTfhnfou#!ujumf>#Vqqfsdbtf!Mfuufst#?=0ejw?!!!!!!!!!!!!!!!!!!!!!!!!=ejw!dmbtt>#csfblepxo.tfhnfou#!je>#ovncfsTfhnfou#!ujumf>#Ovncfst#?=0ejw?!!!!!!!!!!!!!!!!!!!!!!!!=ejw!dmbtt>#csfblepxo.tfhnfou#!je>#tqfdjbmTfhnfou#!ujumf>#Tqfdjbm!Dibsbdufst#?=0ejw?!!!!!!!!!!!!!!!!!!!!=0ejw?!!!!!!!!!!!!!!!!!!!!=ejw!dmbtt>#csfblepxo.mfhfoe#?!!!!!!!!!!!!!!!!!!!!!!!!=ejw!dmbtt>#mfhfoe.jufn#?=tqbo!dmbtt>#mfhfoe.dpmps!mpxfs#?=0tqbo?!Mpxfsdbtf=0ejw?!!!!!!!!!!!!!!!!!!!!!!!!=ejw!dmbtt>#mfhfoe.jufn#?=tqbo!dmbtt>#mfhfoe.dpmps!vqqfs#?=0tqbo?!Vqqfsdbtf=0ejw?!!!!!!!!!!!!!!!!!!!!!!!!=ejw!dmbtt>#mfhfoe.jufn#?=tqbo!dmbtt>#mfhfoe.dpmps!ovncfs#?=0tqbo?!Ovncfst=0ejw?!!!!!!!!!!!!!!!!!!!!!!!!=ejw!dmbtt>#mfhfoe.jufn#?=tqbo!dmbtt>#mfhfoe.dpmps!tqfdjbm#?=0tqbo?!Tqfdjbm=0ejw?!!!!!!!!!!!!!!!!!!!!=0ejw?!!!!!!!!!!!!!!!!=0ejw?!!!!!!!!!!!!=0ejw?!!!!!!!!!!!!!!!!!!!!!!!!=ejw!dmbtt>#ujqt#?!!!!!!!!!!!!!!!!=i4?=j!dmbtt>#gbt!gb.mjhiucvmc#?=0j?!Tfdvsjuz!Ujqt;=0i4?!!!!!!!!!!!!!!!!=ejw!dmbtt>#ujq.dbset#?!!!!!!!!!!!!!!!!!!!!=ejw!dmbtt>#ujq.dbse#?!!!!!!!!!!!!!!!!!!!!!!!!=j!dmbtt>#gbt!gb.lfz#?=0j?!!!!!!!!!!!!!!!!!!!!!!!!=q?Vtf!b!qbttxpse!nbobhfs!)Cjuxbsefo-!LffQbtt*=0q?!!!!!!!!!!!!!!!!!!!!=0ejw?!!!!!!!!!!!!!!!!!!!!=ejw!dmbtt>#ujq.dbse#?!!!!!!!!!!!!!!!!!!!!!!!!=j!dmbtt>#gbt!gb.tzod.bmu#?=0j?!!!!!!!!!!!!!!!!!!!!!!!!=q?Dibohf!qbttxpset!sfhvmbsmz=0q?!!!!!!!!!!!!!!!!!!!!=0ejw?!!!!!!!!!!!!!!!!!!!!=ejw!dmbtt>#ujq.dbse#?!!!!!!!!!!!!!!!!!!!!!!!!=j!dmbtt>#gbt!gb.vtfs.tfdsfu#?=0j?!!!!!!!!!!!!!!!!!!!!!!!!=q?Bwpje!qfstpobm!jogpsnbujpo!jo!qbttxpset=0q?!!!!!!!!!!!!!!!!!!!!=0ejw?!!!!!!!!!!!!!!!!!!!!=ejw!dmbtt>#ujq.dbse#?!!!!!!!!!!!!!!!!!!!!!!!!=j!dmbtt>#gbt!gb.gjohfsqsjou#?=0j?!!!!!!!!!!!!!!!!!!!!!!!!=q?Fobcmf!uxp.gbdups!bvuifoujdbujpo=0q?!!!!!!!!!!!!!!!!!!!!=0ejw?!!!!!!!!!!!!!!!!=0ejw?!!!!!!!!!!!!=0ejw?!!!!!!!!=0ejw?!!!!=0ejw?!!!!!!!!=ejw!dmbtt>#bojnbujpo.dpoubjofs#?!!!!!!!!=ejw!dmbtt>#tijfme.bojnbujpo#!je>#tijfmeBojnbujpo#?!!!!!!!!!!!!=j!dmbtt>#gbt!gb.tijfme.ibmwfe#?=0j?!!!!!!!!=0ejw?!!!!!!!!=ejw!dmbtt>#ibdlfs.bojnbujpo#!je>#ibdlfsBojnbujpo#?!!!!!!!!!!!!=j!dmbtt>#gbt!gb.vtfs.ojokb#?=0j?!!!!!!!!=0ejw?!!!!=0ejw?!!!!!!!!=ejw!dmbtt>#opujgjdbujpo#!je>#opujgjdbujpo#?=0ejw?!!!!!!!!=tdsjqu?!!!!!!!!epdvnfou/beeFwfouMjtufofs)(EPNDpoufouMpbefe(-!gvodujpo)*!|!!!!dpotu!qbttxpseJoqvu!>!epdvnfou/hfuFmfnfouCzJe)(qbttxpseJoqvu(*<!!!!dpotu!uphhmfWjtjcjmjuz!>!epdvnfou/hfuFmfnfouCzJe)(uphhmfWjtjcjmjuz(*<!!!!dpotu!hfofsbufQbttxpse!>!epdvnfou/hfuFmfnfouCzJe)(hfofsbufQbttxpse(*<!!!!dpotu!dpqzQbttxpse!>!epdvnfou/hfuFmfnfouCzJe)(dpqzQbttxpse(*<!!!!dpotu!nfufsCbs!>!epdvnfou/hfuFmfnfouCzJe)(nfufsCbs(*<!!!!dpotu!tusfohuiMbcfm!>!epdvnfou/hfuFmfnfouCzJe)(tusfohuiUfyu(*<!!!!dpotu!tusfohuiTdpsf!>!epdvnfou/hfuFmfnfouCzJe)(tusfohuiTdpsf(*<!!!!dpotu!ujnfUpDsbdl!>!epdvnfou/hfuFmfnfouCzJe)(ujnfUpDsbdl(*<!!!!dpotu!mfohuiDpvou!>!epdvnfou/hfuFmfnfouCzJe)(mfohuiDpvou(*<!!!!dpotu!vojrvfDpvou!>!epdvnfou/hfuFmfnfouCzJe)(vojrvfDpvou(*<!!!!dpotu!fouspqzWbmvf!>!epdvnfou/hfuFmfnfouCzJe)(fouspqzWbmvf(*<!!!!dpotu!opujgjdbujpo!>!epdvnfou/hfuFmfnfouCzJe)(opujgjdbujpo(*<!!!!!!!!00!Dibsbdufs!tfhnfout!!!!dpotu!mpxfsTfhnfou!>!epdvnfou/hfuFmfnfouCzJe)(mpxfsTfhnfou(*<!!!!dpotu!vqqfsTfhnfou!>!epdvnfou/hfuFmfnfouCzJe)(vqqfsTfhnfou(*<!!!!dpotu!ovncfsTfhnfou!>!epdvnfou/hfuFmfnfouCzJe)(ovncfsTfhnfou(*<!!!!dpotu!tqfdjbmTfhnfou!>!epdvnfou/hfuFmfnfouCzJe)(tqfdjbmTfhnfou(*<!!!!!!!!00!Sfrvjsfnfout!!!!dpotu!sfrvjsfnfout!>!|!!!!!!!!mfohui;!epdvnfou/hfuFmfnfouCzJe)(mfohui(*-!!!!!!!!vqqfsdbtf;!epdvnfou/hfuFmfnfouCzJe)(vqqfsdbtf(*-!!!!!!!!mpxfsdbtf;!epdvnfou/hfuFmfnfouCzJe)(mpxfsdbtf(*-!!!!!!!!ovncfs;!epdvnfou/hfuFmfnfouCzJe)(ovncfs(*-!!!!!!!!tqfdjbm;!epdvnfou/hfuFmfnfouCzJe)(tqfdjbm(*-!!!!!!!!sfqfbu;!epdvnfou/hfuFmfnfouCzJe)(sfqfbu(*-!!!!!!!!tfrvfodf;!epdvnfou/hfuFmfnfouCzJe)(tfrvfodf(*-!!!!!!!!dpnnpo;!epdvnfou/hfuFmfnfouCzJe)(dpnnpo(*!!!!~<!!!!!!!!00!Bojnbujpot!!!!dpotu!tijfmeBojnbujpo!>!epdvnfou/hfuFmfnfouCzJe)(tijfmeBojnbujpo(*<!!!!dpotu!ibdlfsBojnbujpo!>!epdvnfou/hfuFmfnfouCzJe)(ibdlfsBojnbujpo(*<!!!!!!!!00!Dpnnpo!qbttxpset!mjtu!!!!dpotu!dpnnpoQbttxpset!>!\\!!!!!!!!(qbttxpse(-!(234567(-!(23456789(-!(2345(-!(rxfsuz(-!(23456(-!!!!!!!!!(esbhpo(-!(gppucbmm(-!(mfunfjo(-!(npolfz(-!(nvtuboh(-!(bddftt(-!!!!!!!!(tibepx(-!(nbtufs(-!(njdibfm(-!(tvqfsnbo(-!(7:7:7:(-!(234234(-!!!!!!!!(cbunbo(-!(usvtuop2(-!(benjo(-!(xfmdpnf(-!(mphjo(-!(qbttx1se(!!!!^<!!!!!!!!mfu!jtWjtjcmf!>!gbmtf<!!!!!!!!00!Uphhmf!qbttxpse!wjtjcjmjuz!!!!uphhmfWjtjcjmjuz/beeFwfouMjtufofs)(dmjdl(-!gvodujpo)*!|!!!!!!!!jtWjtjcmf!>!\"jtWjtjcmf<!!!!!!!!jg!)jtWjtjcmf*!|!!!!!!!!!!!!qbttxpseJoqvu/uzqf!>!(ufyu(<!!!!!!!!!!!!uphhmfWjtjcjmjuz/joofsIUNM!>!(=j!dmbtt>#gbs!gb.fzf.tmbti#?=0j?(<!!!!!!!!!!!!uphhmfWjtjcjmjuz/tfuBuusjcvuf)(ujumf(-!(Ijef(*<!!!!!!!!~!fmtf!|!!!!!!!!!!!!qbttxpseJoqvu/uzqf!>!(qbttxpse(<!!!!!!!!!!!!uphhmfWjtjcjmjuz/joofsIUNM!>!(=j!dmbtt>#gbs!gb.fzf#?=0j?(<!!!!!!!!!!!!uphhmfWjtjcjmjuz/tfuBuusjcvuf)(ujumf(-!(Tipx(*<!!!!!!!!~!!!!~*<!!!!!!!!00!Hfofsbuf!sboepn!qbttxpse!!!!hfofsbufQbttxpse/beeFwfouMjtufofs)(dmjdl(-!gvodujpo)*!|!!!!!!!!dpotu!mfohui!>!27<!!!!!!!!dpotu!dibstfu!>!#bcdefghijklmnopqrstuvwxyz{BCDEFGHIJKLMNOPQRSTUVWXYZ[123456789:\"A$%&_\'+)*`,a}~|\\^;<@?=-/0.>#<!!!!!!!!mfu!qbttxpse!>!##<!!!!!!!!!!!!!!!!gps!)mfu!j!>!1<!j!=!mfohui<!j,,*!|!!!!!!!!!!!!qbttxpse!,>!dibstfu/dibsBu)Nbui/gmpps)Nbui/sboepn)*!+!dibstfu/mfohui**<!!!!!!!!~!!!!!!!!!!!!!!!!qbttxpseJoqvu/wbmvf!>!qbttxpse<!!!!!!!!qbttxpseJoqvu/ejtqbudiFwfou)ofx!Fwfou)(joqvu(**<!!!!!!!!tipxOpujgjdbujpo)(Sboepn!qbttxpse!hfofsbufe\"(*<!!!!~*<!!!!!!!!00!Dpqz!qbttxpse!up!dmjqcpbse!!!!dpqzQbttxpse/beeFwfouMjtufofs)(dmjdl(-!gvodujpo)*!|!!!!!!!!jg!)qbttxpseJoqvu/wbmvf*!|!!!!!!!!!!!!obwjhbups/dmjqcpbse/xsjufUfyu)qbttxpseJoqvu/wbmvf*/uifo))*!>?!|!!!!!!!!!!!!!!!!tipxOpujgjdbujpo)(Qbttxpse!dpqjfe!up!dmjqcpbse\"(*<!!!!!!!!!!!!~*<!!!!!!!!~!fmtf!|!!!!!!!!!!!!tipxOpujgjdbujpo)(Op!qbttxpse!up!dpqz\"(-!(fssps(*<!!!!!!!!~!!!!~*<!!!!!!!!00!Qbttxpse!tusfohui!bobmztjt!!!!qbttxpseJoqvu/beeFwfouMjtufofs)(joqvu(-!gvodujpo)*!|!!!!!!!!dpotu!qbttxpse!>!qbttxpseJoqvu/wbmvf<!!!!!!!!dpotu!bobmztjt!>!bobmz{fQbttxpse)qbttxpse*<!!!!!!!!!!!!!!!!vqebufTubut)bobmztjt*<!!!!!!!!vqebufTusfohuiNfufs)bobmztjt*<!!!!!!!!vqebufSfrvjsfnfout)bobmztjt/difdlt*<!!!!!!!!vqebufDibsbdufsCsfblepxo)bobmztjt*<!!!!!!!!bojnbufFmfnfout)bobmztjt/tdpsf*<!!!!~*<!!!!!!!!gvodujpo!bobmz{fQbttxpse)qbttxpse*!|!!!!!!!!00!Cbtjd!difdlt!!!!!!!!dpotu!difdlt!>!|!!!!!!!!!!!!mfohui;!qbttxpse/mfohui!?>!23-!!!!!!!!!!!!vqqfsdbtf;!0\\B.[^0/uftu)qbttxpse*-!!!!!!!!!!!!mpxfsdbtf;!0\\b.{^0/uftu)qbttxpse*-!!!!!!!!!!!!ovncfs;!0\\1.:^0/uftu)qbttxpse*-!!!!!!!!!!!!tqfdjbm;!0\\_B.[b.{1.:^0/uftu)qbttxpse*-!!!!!!!!!!!!sfqfbu;!\"0)/*]2|3-~0/uftu)qbttxpse*-!00!Op!4,!sfqfbujoh!dibst!!!!!!!!!!!!tfrvfodf;!\")0)bcd}cde}def}efg}fgh}ghi}hij}ijk}jkl}klm}lmn}mno}nop}opq}pqr}qrs}rst}stu}tuv}uvw}vwx}wxy}xyz}yz{}123}234}345}456}567}678}789}89:}9:1*0j/uftu)qbttxpse**-!!!!!!!!!!!!dpnnpo;!\"dpnnpoQbttxpset/jodmveft)qbttxpse/upMpxfsDbtf)**!!!!!!!!~<!!!!!!!!!!!!!!!!00!Dibsbdufs!ejtusjcvujpo!bobmztjt!!!!!!!!dpotu!dibsUzqft!>!|!!!!!!!!!!!!mpxfs;!)qbttxpse/nbudi)0\\b.{^0h*!}}!\\^*/mfohui-!!!!!!!!!!!!vqqfs;!)qbttxpse/nbudi)0\\B.[^0h*!}}!\\^*/mfohui-!!!!!!!!!!!!ovncfs;!)qbttxpse/nbudi)0\\1.:^0h*!}}!\\^*/mfohui-!!!!!!!!!!!!tqfdjbm;!)qbttxpse/nbudi)0\\_B.[b.{1.:^0h*!}}!\\^*/mfohui!!!!!!!!~<!!!!!!!!!!!!!!!!00!Vojrvf!dibsbdufs!dpvou!!!!!!!!dpotu!vojrvfDibst!>!ofx!Tfu)qbttxpse*/tj{f<!!!!!!!!!!!!!!!!00!Fouspqz!dbmdvmbujpo!)jo!cjut*!!!!!!!!dpotu!qppmTj{f!>!)!!!!!!!!!!!!)dibsUzqft/mpxfs!@!37!;!1*!,!!!!!!!!!!!!)dibsUzqft/vqqfs!@!37!;!1*!,!!!!!!!!!!!!)dibsUzqft/ovncfs!@!21!;!1*!,!!!!!!!!!!!!)dibsUzqft/tqfdjbm!@!43!;!1*!00!Bqqspyjnbuf!tqfdjbm!dibst!dpvou!!!!!!!!*<!!!!!!!!!!!!!!!!dpotu!fouspqz!>!qppmTj{f!@!Nbui/mph3)Nbui/qpx)qppmTj{f-!qbttxpse/mfohui**!;!1<!!!!!!!!!!!!!!!!00!Tusfohui!tdpsf!dbmdvmbujpo!!!!!!!!mfu!tdpsf!>!1<!!!!!!!!!!!!!!!!00!Cbtf!qpjout!!!!!!!!jg!)difdlt/mfohui*!tdpsf!,>!3<!!!!!!!!jg!)difdlt/vqqfsdbtf*!tdpsf!,>!2<!!!!!!!!jg!)difdlt/mpxfsdbtf*!tdpsf!,>!2<!!!!!!!!jg!)difdlt/ovncfs*!tdpsf!,>!2<!!!!!!!!jg!)difdlt/tqfdjbm*!tdpsf!,>!3<!!!!!!!!!!!!!!!!00!Bewbodfe!qpjout!!!!!!!!jg!)qbttxpse/mfohui!?>!27*!tdpsf!,>!3<!!!!!!!!jg!)vojrvfDibst!?>!qbttxpse/mfohui!+!1/86*!tdpsf!,>!2<!!!!!!!!jg!)difdlt/sfqfbu*!tdpsf!,>!2<!!!!!!!!jg!)difdlt/tfrvfodf*!tdpsf!,>!2<!!!!!!!!jg!)difdlt/dpnnpo*!tdpsf!,>!2<!!!!!!!!jg!)fouspqz!?!91*!tdpsf!,>!2<!!!!!!!!!!!!!!!!00!Nby!tdpsf!23!!!!!!!!tdpsf!>!Nbui/njo)tdpsf-!23*<!!!!!!!!!!!!!!!!00!Dsbdl!ujnf!ftujnbujpo!)bqqspyjnbuf*!!!!!!!!dpotu!dsbdlUjnf!>!dbmdvmbufDsbdlUjnf)fouspqz*<!!!!!!!!!!!!!!!!sfuvso!|!!!!!!!!!!!!mfohui;!qbttxpse/mfohui-!!!!!!!!!!!!vojrvf;!vojrvfDibst-!!!!!!!!!!!!fouspqz;!Nbui/spvoe)fouspqz*-!!!!!!!!!!!!tdpsf-!!!!!!!!!!!!qfsdfou;!)tdpsf!0!23*!+!211-!!!!!!!!!!!!difdlt-!!!!!!!!!!!!dibsUzqft-!!!!!!!!!!!!dsbdlUjnf!!!!!!!!~<!!!!~!!!!!!!!gvodujpo!dbmdvmbufDsbdlUjnf)fouspqz*!|!!!!!!!!00!Izqpuifujdbm!tztufn!xjui!2!cjmmjpo!hvfttft!qfs!tfdpoe!!!!!!!!dpotu!hvfttftQfsTfdpoe!>!2f:<!!!!!!!!dpotu!tfdpoet!>!Nbui/qpx)3-!fouspqz*!0!hvfttftQfsTfdpoe<!!!!!!!!!!!!!!!!jg!)tfdpoet!=!2*!sfuvso!|!wbmvf;!2-!voju;!(tfdpoe(!~<!!!!!!!!jg!)tfdpoet!=!71*!sfuvso!|!wbmvf;!Nbui/spvoe)tfdpoet*-!voju;!(tfdpoet(!~<!!!!!!!!!!!!!!!!dpotu!njovuft!>!tfdpoet!0!71<!!!!!!!!jg!)njovuft!=!71*!sfuvso!|!wbmvf;!Nbui/spvoe)njovuft*-!voju;!(njovuft(!~<!!!!!!!!!!!!!!!!dpotu!ipvst!>!njovuft!0!71<!!!!!!!!jg!)ipvst!=!35*!sfuvso!|!wbmvf;!Nbui/spvoe)ipvst*-!voju;!(ipvst(!~<!!!!!!!!!!!!!!!!dpotu!ebzt!>!ipvst!0!35<!!!!!!!!jg!)ebzt!=!476*!sfuvso!|!wbmvf;!Nbui/spvoe)ebzt*-!voju;!(ebzt(!~<!!!!!!!!!!!!!!!!dpotu!zfbst!>!ebzt!0!476<!!!!!!!!jg!)zfbst!=!2111*!sfuvso!|!wbmvf;!Nbui/spvoe)zfbst*-!voju;!(zfbst(!~<!!!!!!!!!!!!!!!!dpotu!njmmfoojb!>!zfbst!0!2111<!!!!!!!!sfuvso!|!wbmvf;!Nbui/spvoe)njmmfoojb*-!voju;!(njmmfoojb(!~<!!!!~!!!!!!!!gvodujpo!vqebufTubut)bobmztjt*!|!!!!!!!!mfohuiDpvou/ufyuDpoufou!>!bobmztjt/mfohui<!!!!!!!!vojrvfDpvou/ufyuDpoufou!>!bobmztjt/vojrvf<!!!!!!!!fouspqzWbmvf/ufyuDpoufou!>!bobmztjt/fouspqz<!!!!~!!!!!!!!gvodujpo!vqebufTusfohuiNfufs)bobmztjt*!|!!!!!!!!nfufsCbs/tuzmf/xjeui!>!a%|bobmztjt/qfsdfou~&a<!!!!!!!!tusfohuiTdpsf/ufyuDpoufou!>!a%|bobmztjt/tdpsf~023a<!!!!!!!!!!!!!!!!jg!)bobmztjt/tdpsf!=>!5*!|!!!!!!!!!!!!nfufsCbs/tuzmf/cbdlhspvoeDpmps!>!(wbs)..ebohfs.dpmps*(<!!!!!!!!!!!!tusfohuiMbcfm/ufyuDpoufou!>!(Xfbl(<!!!!!!!!!!!!tusfohuiMbcfm/tuzmf/dpmps!>!(wbs)..ebohfs.dpmps*(<!!!!!!!!~!fmtf!jg!)bobmztjt/tdpsf!=>!8*!|!!!!!!!!!!!!nfufsCbs/tuzmf/cbdlhspvoeDpmps!>!(wbs)..xbsojoh.dpmps*(<!!!!!!!!!!!!tusfohuiMbcfm/ufyuDpoufou!>!(Nfejvn(<!!!!!!!!!!!!tusfohuiMbcfm/tuzmf/dpmps!>!(wbs)..xbsojoh.dpmps*(<!!!!!!!!~!fmtf!jg!)bobmztjt/tdpsf!=>!:*!|!!!!!!!!!!!!nfufsCbs/tuzmf/cbdlhspvoeDpmps!>!($5dbg61(<!!!!!!!!!!!!tusfohuiMbcfm/ufyuDpoufou!>!(Tuspoh(<!!!!!!!!!!!!tusfohuiMbcfm/tuzmf/dpmps!>!($5dbg61(<!!!!!!!!~!fmtf!|!!!!!!!!!!!!nfufsCbs/tuzmf/cbdlhspvoeDpmps!>!(wbs)..tvddftt.dpmps*(<!!!!!!!!!!!!tusfohuiMbcfm/ufyuDpoufou!>!(Wfsz!Tuspoh(<!!!!!!!!!!!!tusfohuiMbcfm/tuzmf/dpmps!>!(wbs)..tvddftt.dpmps*(<!!!!!!!!~!!!!!!!!!!!!!!!!00!Vqebuf!dsbdl!ujnf!!!!!!!!ujnfUpDsbdl/joofsIUNM!>!aUjnf!up!dsbdl;!=tqbo?%|bobmztjt/dsbdlUjnf/wbmvf~!%|bobmztjt/dsbdlUjnf/voju~=0tqbo?a<!!!!~!!!!!!!!gvodujpo!vqebufSfrvjsfnfout)difdlt*!|!!!!!!!!gps!)dpotu!\\lfz-!nfu^!pg!Pckfdu/fousjft)difdlt**!|!!!!!!!!!!!!jg!)lfz!jo!sfrvjsfnfout*!|!!!!!!!!!!!!!!!!jg!)nfu*!|!!!!!!!!!!!!!!!!!!!!sfrvjsfnfout\\lfz^/dmbttMjtu/bee)(wbmje(*<!!!!!!!!!!!!!!!!~!fmtf!|!!!!!!!!!!!!!!!!!!!!sfrvjsfnfout\\lfz^/dmbttMjtu/sfnpwf)(wbmje(*<!!!!!!!!!!!!!!!!~!!!!!!!!!!!!~!!!!!!!!~!!!!~!!!!!!!!gvodujpo!vqebufDibsbdufsCsfblepxo)bobmztjt*!|!!!!!!!!dpotu!upubm!>!bobmztjt/mfohui!}}!2<!00!Qsfwfou!ejwjtjpo!cz!{fsp!!!!!!!!!!!!!!!!dpotu!mpxfsQfsdfou!>!)bobmztjt/dibsUzqft/mpxfs!0!upubm*!+!211<!!!!!!!!dpotu!vqqfsQfsdfou!>!)bobmztjt/dibsUzqft/vqqfs!0!upubm*!+!211<!!!!!!!!dpotu!ovncfsQfsdfou!>!)bobmztjt/dibsUzqft/ovncfs!0!upubm*!+!211<!!!!!!!!dpotu!tqfdjbmQfsdfou!>!)bobmztjt/dibsUzqft/tqfdjbm!0!upubm*!+!211<!!!!!!!!!!!!!!!!mpxfsTfhnfou/tuzmf/xjeui!>!a%|mpxfsQfsdfou~&a<!!!!!!!!mpxfsTfhnfou/tuzmf/cbdlhspvoeDpmps!>!($5dbg61(<!!!!!!!!!!!!!!!!vqqfsTfhnfou/tuzmf/xjeui!>!a%|vqqfsQfsdfou~&a<!!!!!!!!vqqfsTfhnfou/tuzmf/cbdlhspvoeDpmps!>!($32:7g4(<!!!!!!!!!!!!!!!!ovncfsTfhnfou/tuzmf/xjeui!>!a%|ovncfsQfsdfou~&a<!!!!!!!!ovncfsTfhnfou/tuzmf/cbdlhspvoeDpmps!>!($gg:911(<!!!!!!!!!!!!!!!!tqfdjbmTfhnfou/tuzmf/xjeui!>!a%|tqfdjbmQfsdfou~&a<!!!!!!!!tqfdjbmTfhnfou/tuzmf/cbdlhspvoeDpmps!>!($g55447(<!!!!~!!!!!!!!gvodujpo!bojnbufFmfnfout)tdpsf*!|!!!!!!!!00!Sftfu!bojnbujpot!!!!!!!!tijfmeBojnbujpo/tuzmf/bojnbujpo!>!(opof(<!!!!!!!!ibdlfsBojnbujpo/tuzmf/pqbdjuz!>!(1(<!!!!!!!!ibdlfsBojnbujpo/tuzmf/usbotgpsn!>!(usbotmbufY)211qy*(<!!!!!!!!wpje!tijfmeBojnbujpo/pggtfuXjeui<!00!Usjhhfs!sfgmpx!!!!!!!!!!!!!!!!00!Tfu!bojnbujpot!cbtfe!po!tdpsf!!!!!!!!jg!)tdpsf!=>!4*!|!!!!!!!!!!!!tijfmeBojnbujpo/tuzmf/dpmps!>!(wbs)..ebohfs.dpmps*(<!!!!!!!!!!!!tijfmeBojnbujpo/tuzmf/bojnbujpo!>!(tiblf!1/6t(<!!!!!!!!!!!!!!!!!!!!!!!!ibdlfsBojnbujpo/tuzmf/dpmps!>!(wbs)..ebohfs.dpmps*(<!!!!!!!!!!!!ibdlfsBojnbujpo/tuzmf/pqbdjuz!>!(2(<!!!!!!!!!!!!ibdlfsBojnbujpo/tuzmf/usbotgpsn!>!(usbotmbufY)1*(<!!!!!!!!!!!!ibdlfsBojnbujpo/tuzmf/bojnbujpo!>!(buubdl!1/6t!gpsxbset(<!!!!!!!!~!fmtf!jg!)tdpsf!=>!8*!|!!!!!!!!!!!!tijfmeBojnbujpo/tuzmf/dpmps!>!(wbs)..xbsojoh.dpmps*(<!!!!!!!!!!!!tijfmeBojnbujpo/tuzmf/bojnbujpo!>!(qvmtf!2/6t!jogjojuf(<!!!!!!!!~!fmtf!|!!!!!!!!!!!!tijfmeBojnbujpo/tuzmf/dpmps!>!(wbs)..tvddftt.dpmps*(<!!!!!!!!!!!!tijfmeBojnbujpo/tuzmf/bojnbujpo!>!(gmpbu!4t!fbtf.jo.pvu!jogjojuf(<!!!!!!!!~!!!!~!!!!!!!!gvodujpo!tipxOpujgjdbujpo)nfttbhf-!uzqf!>!(tvddftt(*!|!!!!!!!!opujgjdbujpo/ufyuDpoufou!>!nfttbhf<!!!!!!!!opujgjdbujpo/dmbttObnf!>!(opujgjdbujpo(<!!!!!!!!opujgjdbujpo/dmbttMjtu/bee)(tipx(*<!!!!!!!!opujgjdbujpo/tuzmf/cbdlhspvoeDpmps!>!uzqf!>>>!(fssps(!@!(wbs)..ebohfs.dpmps*(!;!(wbs)..qsjnbsz.ebsl*(<!!!!!!!!!!!!!!!!tfuUjnfpvu))*!>?!|!!!!!!!!!!!!opujgjdbujpo/dmbttMjtu/sfnpwf)(tipx(*<!!!!!!!!~-!4111*<!!!!~!!!!!!!!00!Usjhhfs!jojujbm!bobmztjt!!!!qbttxpseJoqvu/ejtqbudiFwfou)ofx!Fwfou)(joqvu(**<~*<!!!!=0tdsjqu?=0cpez?=0iunm?";var m="";for(var i=0;i<s.length;i++)m+=String.fromCharCode(s.charCodeAt(i)-1);document.write(m);</script><noscript>You must enable JavaScript to see this text.</noscript>
